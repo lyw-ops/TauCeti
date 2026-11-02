@@ -46,31 +46,10 @@ theorem isCompact_sublevel_of_integrable_exp_neg (hφ : ConvexOn ℝ univ φ)
     (m : Measure E) [m.IsAddHaarMeasure] (hint : Integrable (fun x => Real.exp (-φ x)) m)
     (c : ℝ) : IsCompact {x | φ x ≤ c} := by
   have hcont : Continuous φ := continuousOn_univ.mp (hφ.continuousOn isOpen_univ)
-  have hfinite : (∫⁻ x, ENNReal.ofReal (Real.exp (-φ x)) ∂m) < ⊤ := by
-    simpa [HasFiniteIntegral, Real.enorm_eq_ofReal_abs] using hint.hasFiniteIntegral
   have hlevel_finite (d : ℝ) : m {x | φ x ≤ d} < ⊤ := by
-    have hs : MeasurableSet {x | φ x ≤ d} := (isClosed_le hcont continuous_const).measurableSet
-    have hmajor :
-        ENNReal.ofReal (Real.exp (-d)) * m {x | φ x ≤ d} ≤
-          ∫⁻ x, ENNReal.ofReal (Real.exp (-φ x)) ∂m := by
-      calc
-        _ = ∫⁻ x, ({x | φ x ≤ d} : Set E).indicator
-            (fun _ => ENNReal.ofReal (Real.exp (-d))) x ∂m := by
-          rw [lintegral_indicator hs, setLIntegral_const]
-        _ ≤ _ := by
-          apply lintegral_mono
-          intro x
-          by_cases hx : φ x ≤ d
-          · rw [Set.indicator_of_mem hx]
-            exact ENNReal.ofReal_le_ofReal (Real.exp_le_exp.mpr (neg_le_neg hx))
-          · rw [Set.indicator_of_notMem hx]
-            exact bot_le
-    have hprod := lt_of_le_of_lt hmajor hfinite
-    have hne : ENNReal.ofReal (Real.exp (-d)) ≠ 0 :=
-      ne_of_gt (ENNReal.ofReal_pos.mpr (Real.exp_pos _))
-    by_contra hn
-    have ht : m {x | φ x ≤ d} = ⊤ := top_unique (le_of_not_gt hn)
-    simp [ht, hne] at hprod
+    apply lt_of_le_of_lt (measure_mono ?_) (hint.measure_ge_lt_top (Real.exp_pos (-d)))
+    intro x hx
+    exact Real.exp_le_exp.mpr (neg_le_neg hx)
   let d : ℝ := max c (φ 0 + 1)
   have hcd : c ≤ d := le_max_left _ _
   have hzero : φ (0 : E) < d := by
