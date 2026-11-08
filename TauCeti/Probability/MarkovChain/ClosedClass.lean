@@ -5,7 +5,7 @@ Authors: The Tau Ceti contributors
 -/
 module
 
-public import TauCeti.Probability.Kernel.ClosedClass
+public import TauCeti.Probability.Kernel.ClosedClass.Basic
 public import TauCeti.Probability.MarkovChain.MarkovProperty
 public import TauCeti.Probability.MarkovChain.Recurrence
 
